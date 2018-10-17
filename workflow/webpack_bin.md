@@ -1,18 +1,18 @@
 # Webpack bin/webpack.js
-看完这篇文章你应该可以回答以下问题：
-1. 知道`/bin/webpack.js`文件都做了些什么
+看完这篇文章你应该可以回答以下问题：
+1. 知道`/bin/webpack.js`文件都做了些什么
 
-当我们从命令行中输入`webpack`时, 系统就会从webpack的`package.json`文件中寻找cli的入口文件。因为webpack的package.json中定义了`"bin": "./bin/webpack.js"`这一项，所以命令行输入后这个文件就会被执行。我们来看看这个文件的代码都做了些什么。
+当我们从命令行中输入`webpack`时, 系统就会从webpack的`package.json`文件中寻找cli的入口文件。因为webpack的package.json中定义了`"bin": "./bin/webpack.js"`这一项，所以命令行输入后这个文件就会被执行。我们来看看这个文件的代码都做了些什么。
 
 ```javascript
 // shebang 告诉系统用node执行脚本，一般cli脚本都要带这个
 #!/usr/bin/env node
 
-// 指定process的exitCode的默认值是0，也就是正常退出，关于更多process exitCode
+// 指定process的exitCode的默认值是0，也就是正常退出，关于更多process exitCode
 // https://nodejs.org/api/process.html#process_exit_codes
 process.exitCode = 0;
 
-// runCommand是一个帮助方法，功能就是在child process里面运行一些shell命令，然后通过promise将脚本运行的结果返回
+// runCommand是一个帮助方法，功能就是在child process里面运行一些shell命令，然后通过promise将脚本运行的结果返回
 /**
  * @param {string} command process to run
  * @param {string[]} args commandline arguments
@@ -31,7 +31,7 @@ const runCommand = (command, args) => {
 		});
 
 		executedCommand.on("exit", code => {
-      // 根据child process的exitCode来判断子进程是否是正常退出
+      // 根据child process的exitCode来判断子进程是否是正常退出
 			if (code === 0) {
 				resolve();
 			} else {
@@ -41,14 +41,16 @@ const runCommand = (command, args) => {
 	});
 };
 
-// 这是个帮助函数，用来判断某个包有没有被安装
+// 这是个帮助函数，用来判断某个包有没有被安装
 /**
  * @param {string} packageName name of the package
  * @returns {boolean} is the package installed?
  */
 const isInstalled = packageName => {
 	try {
-    // require.resolve()方法会使用require()内部的包解析机制帮你寻找这个包名实际对应的文件，如果可以找到该包就返回文件的绝对路径，如果不可以就会抛出一个错误，这会被视为该包没有被安装
+    // require.resolve()方法会使用require()内部的包解析机制帮你寻找这个包名实际对应的
+    // 文件，如果可以找到该包就返回文件的绝对路径，如果不可以就会抛出一个错误，这会被视为该包
+    // 没有被安装
 		require.resolve(packageName);
 
 		return true;
@@ -118,8 +120,8 @@ if (installedClis.length === 0) {
 
 	console.error(notify);
 
-  // 判断用户当前使用的是哪个package manager, yarn还是npm
-  // 判断package manager 是yarn的条件是，当前process的current working directory有没有yarn.lock这个文件，凡是用yarn安装过工具包的包的根目录都会有一个yarn.lock文件，用npm安装包的会有一个npm.lock文件
+  // 判断用户当前使用的是哪个package manager, yarn还是npm
+  // 判断package manager 是yarn的条件是，当前process的current working directory有没有yarn.lock这个文件，凡是用yarn安装过工具包的包的根目录都会有一个yarn.lock文件，用npm安装包的会有一个npm.lock文件
 	const isYarn = fs.existsSync(path.resolve(process.cwd(), "yarn.lock"));
 
 	const packageManager = isYarn ? "yarn" : "npm";
@@ -180,7 +182,7 @@ if (installedClis.length === 0) {
   // 找出该包的package.json文件
 	const pkgPath = require.resolve(`${installedClis[0].package}/package.json`);
 	// eslint-disable-next-line node/no-missing-require
-  // 获取该cli包的package.json的内容
+  // 获取该cli包的package.json的内容
 	const pkg = require(pkgPath);
 	// eslint-disable-next-line node/no-missing-require
   // 因为cli包的入口文件可以从package.json拿到，就是'bin'字段的值
@@ -205,9 +207,9 @@ if (installedClis.length === 0) {
 ```
 
 ## 概述
-上面详细解析了webpack bin/webpack.js文件的代码，其实这个文件的逻辑很简单，可以简单叙述为如下：
+上面详细解析了webpack bin/webpack.js文件的代码，其实这个文件的逻辑很简单，可以简单叙述为如下：
 ```
 判断用户有没有安装webpack相关的cli工具，现在有webpack-cli和webpack-command这两个工具，其中webpack-command已经archived了，所以推荐使用webpack-cli。如果用户只安装了webpack-cli就执行webpack-cli的bin入口文件，这相当于直接在命令行输入webpack-cli。如果用户安装了超过一个webpack cli工具，webpack不做任何选择，退出进程。如果用户没有安装任何cli工具，webpack安装webpack-cli并且执行。
 ``` 
 
-因为bin/webpack.js执行了webpack-cli/bin/cli.js，我们接着看一下这个文件都做了什么。
+因为bin/webpack.js执行了webpack-cli/bin/cli.js，我们接着看一下这个文件都做了什么。

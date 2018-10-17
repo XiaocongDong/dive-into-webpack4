@@ -208,8 +208,8 @@ if (installedClis.length === 0) {
 
 ## 概述
 上面详细解析了webpack bin/webpack.js文件的代码，其实这个文件的逻辑很简单，可以简单叙述为如下：
-```
-判断用户有没有安装webpack相关的cli工具，现在有webpack-cli和webpack-command这两个工具，其中webpack-command已经archived了，所以推荐使用webpack-cli。如果用户只安装了webpack-cli就执行webpack-cli的bin入口文件，这相当于直接在命令行输入webpack-cli。如果用户安装了超过一个webpack cli工具，webpack不做任何选择，退出进程。如果用户没有安装任何cli工具，webpack安装webpack-cli并且执行。
-``` 
+
+> 判断用户有没有安装webpack相关的cli工具，现在有webpack-cli和webpack-command这两个工具，其中webpack-command已经archived了，所以推荐使用webpack-cli。如果用户只安装了webpack-cli就执行webpack-cli的bin入口文件，这相当于直接在命令行输入webpack-cli。如果用户安装了超过一个webpack cli工具，webpack不做任何选择，退出进程。如果用户没有安装任何cli工具，webpack安装webpack-cli并且执行。
+
 
 因为bin/webpack.js执行了webpack-cli/bin/cli.js，我们接着看一下这个文件都做了什么。
